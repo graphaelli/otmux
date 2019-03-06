@@ -59,6 +59,7 @@ func main() {
 	}()
 
 	if rsp, err := (&http.Client{Timeout: 2 * time.Second}).Do(req); err != nil {
+		child.LogKV("event", "error")
 		child.LogKV("error", err.Error())
 	} else {
 		child.LogKV("status_code", rsp.StatusCode)
