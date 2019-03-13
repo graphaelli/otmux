@@ -44,3 +44,19 @@ func StartServer(tracer opentracing.Tracer, logger *log.Logger) (string, io.Clos
 
 	return addr, server
 }
+
+func NewTracers() ([]opentracing.Tracer, []io.Closer) {
+	elasticOpenTracer, elasticCloser := ElasticTracer()
+	jaegerOpenTracer, jaegerCloser := JaegerTracer()
+	zipkinOpenTracer, zipkinCloser := ZipkinTracer()
+
+	return []opentracing.Tracer{
+		elasticOpenTracer,
+		jaegerOpenTracer,
+		zipkinOpenTracer,
+	}, []io.Closer{
+		elasticCloser,
+		jaegerCloser,
+		zipkinCloser,
+	}
+}

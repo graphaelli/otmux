@@ -19,15 +19,13 @@ func main() {
 
 	logger := log.New(os.Stderr, "", common.LogFmt)
 
-	elasticOpenTracer, elasticCloser := common.ElasticTracer()
-	defer elasticCloser.Close()
-	jaegerOpenTracer, jaegerCloser := common.JaegerTracer()
-	defer jaegerCloser.Close()
-	zipkinOpenTracer, zipkinCloser := common.ZipkinTracer()
-	defer zipkinCloser.Close()
-
+	tracers, closers := common.NewTracers()
+	for _, c := range closers {
+		// ok
+		defer c.Close()
+	}
 	// Opentracing tracer
-	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer, zipkinOpenTracer)
+	tracer := otmux.NewTracer(tracers...)
 	opentracing.SetGlobalTracer(tracer)
 
 	// Start an HTTP server
