@@ -23,9 +23,11 @@ func main() {
 	defer elasticCloser.Close()
 	jaegerOpenTracer, jaegerCloser := common.JaegerTracer()
 	defer jaegerCloser.Close()
+	zipkinOpenTracer, zipkinCloser := common.ZipkinTracer()
+	defer zipkinCloser.Close()
 
 	// Opentracing tracer
-	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer)
+	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer, zipkinOpenTracer)
 	opentracing.SetGlobalTracer(tracer)
 
 	// Start an HTTP server
