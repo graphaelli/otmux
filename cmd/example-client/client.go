@@ -25,9 +25,16 @@ func main() {
 	defer jaegerCloser.Close()
 	zipkinOpenTracer, zipkinCloser := common.ZipkinTracer()
 	defer zipkinCloser.Close()
+	haystackOpenTracer, haystackCloser := common.HaystackTracer()
 
+	// give haystack time to flush
+	defer func() {
+		// give haystack time to flush before closing, otherwise: Fail to dispatch to haystack-agent with error rpc error: code = Canceled desc = grpc: the client connection is closing
+		time.Sleep(1 * time.Second)
+		haystackCloser.Close()
+	}()
 	// Opentracing tracer
-	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer, zipkinOpenTracer)
+	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer, zipkinOpenTracer, haystackOpenTracer)
 	opentracing.SetGlobalTracer(tracer)
 
 	// Start an HTTP server
@@ -43,14 +50,14 @@ func main() {
 	time.Sleep(10 * time.Millisecond)
 	child := opentracing.StartSpan("request", opentracing.ChildOf(span.Context()))
 	req, _ := http.NewRequest(http.MethodGet, *remote, nil)
-
-	if err := tracer.Inject(
-		child.Context(),
-		opentracing.HTTPHeaders,
-		opentracing.HTTPHeadersCarrier(req.Header)); err != nil {
-		logger.Printf("failed to inject: %s", err)
-	}
-
+	/*
+		if err := tracer.Inject(
+			child.Context(),
+			opentracing.HTTPHeaders,
+			opentracing.HTTPHeadersCarrier(req.Header)); err != nil {
+			logger.Printf("failed to inject: %s", err)
+		}
+	*/
 	// do something concurrently with the request
 	done := make(chan struct{})
 	go func() {
