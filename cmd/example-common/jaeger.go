@@ -12,6 +12,12 @@ import (
 
 func JaegerTracer() (opentracing.Tracer, io.Closer) {
 	cfg := &config.Configuration{
+		Headers: &jaeger.HeadersConfig{
+			JaegerDebugHeader:        jaeger.JaegerDebugHeader,
+			JaegerBaggageHeader:      jaeger.JaegerBaggageHeader,
+			TraceBaggageHeaderPrefix: "jaeger-ctx-",
+			TraceContextHeaderName:   "jaeger-trace-id",
+		},
 		ServiceName: filepath.Base(os.Args[0]),
 		Sampler: &config.SamplerConfig{
 			Type:  "const",

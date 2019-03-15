@@ -49,13 +49,16 @@ func NewTracers() ([]opentracing.Tracer, []io.Closer) {
 	elasticOpenTracer, elasticCloser := ElasticTracer()
 	jaegerOpenTracer, jaegerCloser := JaegerTracer()
 	zipkinOpenTracer, zipkinCloser := ZipkinTracer()
+	haystackOpenTracer, haystackCloser := HaystackTracer()
 
 	return []opentracing.Tracer{
 		elasticOpenTracer,
+		haystackOpenTracer,
 		jaegerOpenTracer,
 		zipkinOpenTracer,
 	}, []io.Closer{
 		elasticCloser,
+		haystackCloser,
 		jaegerCloser,
 		zipkinCloser,
 	}
