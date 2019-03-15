@@ -29,7 +29,6 @@ func (logger *consoleLogger) Debug(format string, v ...interface{}) {
 func HaystackTracer() (opentracing.Tracer, io.Closer) {
 	tracer, closer := haystack.NewTracer(filepath.Base(os.Args[0]),
 		haystack.NewAgentDispatcher("localhost", 34000, 3*time.Second, 1000),
-		haystack.TracerOptionsFactory.Tag("appVer", "v1.1"),
 		haystack.TracerOptionsFactory.Logger(&consoleLogger{}))
 	return tracer, closer
 }
