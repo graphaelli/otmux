@@ -25,12 +25,10 @@ func StartServer(tracer opentracing.Tracer, logger *log.Logger) (string, io.Clos
 		Addr: addr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var opts []opentracing.StartSpanOption
-			/*
 			carrier := opentracing.HTTPHeadersCarrier(r.Header)
 			if dtContext, err := tracer.Extract(opentracing.HTTPHeaders, carrier); err == nil {
 				opts = append(opts, opentracing.ChildOf(dtContext))
 			}
-			*/
 			span := opentracing.StartSpan(fmt.Sprintf("%s %s", r.Method, r.URL.String()), opts...)
 			for h, v := range r.Header {
 				span.LogFields(otlog.String("header="+h, strings.Join(v, ",")))

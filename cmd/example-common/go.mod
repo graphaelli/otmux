@@ -1,7 +1,7 @@
 module github.com/graphaelli/otmux/cmd/example-common
 
 require (
-	github.com/ExpediaDotCom/haystack-client-go v0.0.0-20190228075237-a1cceb366719
+	github.com/ExpediaDotCom/haystack-client-go v0.0.0-20190315171017-e7edbdf53a61
 	github.com/Shopify/sarama v1.21.0 // indirect
 	github.com/apache/thrift v0.12.0 // indirect
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
