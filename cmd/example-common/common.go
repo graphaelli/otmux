@@ -53,13 +53,13 @@ func NewTracers() ([]opentracing.Tracer, []io.Closer) {
 
 	return []opentracing.Tracer{
 		elasticOpenTracer,
+		haystackOpenTracer,
 		jaegerOpenTracer,
 		zipkinOpenTracer,
-		haystackOpenTracer,
 	}, []io.Closer{
 		elasticCloser,
+		haystackCloser,
 		jaegerCloser,
 		zipkinCloser,
-		haystackCloser,
 	}
 }
