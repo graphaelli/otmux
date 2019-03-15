@@ -19,22 +19,13 @@ func main() {
 
 	logger := log.New(os.Stderr, "", common.LogFmt)
 
-	elasticOpenTracer, elasticCloser := common.ElasticTracer()
-	defer elasticCloser.Close()
-	jaegerOpenTracer, jaegerCloser := common.JaegerTracer()
-	defer jaegerCloser.Close()
-	zipkinOpenTracer, zipkinCloser := common.ZipkinTracer()
-	defer zipkinCloser.Close()
-	haystackOpenTracer, haystackCloser := common.HaystackTracer()
-
-	// give haystack time to flush
-	defer func() {
-		// give haystack time to flush before closing, otherwise: Fail to dispatch to haystack-agent with error rpc error: code = Canceled desc = grpc: the client connection is closing
-		time.Sleep(1 * time.Second)
-		haystackCloser.Close()
-	}()
+	tracers, closers := common.NewTracers()
+	for _, c := range closers {
+		// ok
+		defer c.Close()
+	}
 	// Opentracing tracer
-	tracer := otmux.NewTracer(elasticOpenTracer, jaegerOpenTracer, zipkinOpenTracer, haystackOpenTracer)
+	tracer := otmux.NewTracer(tracers...)
 	opentracing.SetGlobalTracer(tracer)
 
 	// Start an HTTP server
