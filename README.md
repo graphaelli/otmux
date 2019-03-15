@@ -19,10 +19,9 @@ opentracing.SetGlobalTracer(tracer)
 [cmd/](cmd) contains an example client and server wired up to:
 
 * [Elastic APM](https://www.elastic.co/solutions/apm)
+* [Haystack](https://expediadotcom.github.io/haystack/)
 * [Jaeger](http://jaegertracing.io)
 * [Zipkin](http://zipkin.io)
 
 An example of the same trace represented across those systems:
-![Elastic APM tracing the same activity](elastic.png)
-![Jaeger tracing the same activity](jaeger.png)
-![Zipkin tracing the same activity](zipkin.png)
+![All tracing the same activity](tracers.png)
