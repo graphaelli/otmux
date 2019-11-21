@@ -26,6 +26,15 @@ func (logger *consoleLogger) Debug(format string, v ...interface{}) {
 	log.Print("\n")
 }
 
+type waitClose struct {
+	io.Closer
+}
+
+func (c *waitClose) Close() error {
+	time.Sleep(2 * time.Second)
+	return c.Closer.Close()
+}
+
 func HaystackTracer() (opentracing.Tracer, io.Closer) {
 	tracer, closer := haystack.NewTracer(filepath.Base(os.Args[0]),
 		haystack.NewAgentDispatcher("localhost", 34000, 3*time.Second, 1000),
@@ -38,5 +47,5 @@ func HaystackTracer() (opentracing.Tracer, io.Closer) {
 				ParentSpanIDKEYName:  "Haystack-Parent-ID",
 				BaggagePrefixKEYName: "Haystack-Baggage",
 			}, haystack.URLCodex{})))
-	return tracer, closer
+	return tracer, &waitClose{closer}
 }
