@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -45,21 +46,34 @@ func StartServer(tracer opentracing.Tracer, logger *log.Logger) (string, io.Clos
 	return addr, server
 }
 
-func NewTracers() ([]opentracing.Tracer, []io.Closer) {
-	elasticOpenTracer, elasticCloser := ElasticTracer()
-	jaegerOpenTracer, jaegerCloser := JaegerTracer()
-	zipkinOpenTracer, zipkinCloser := ZipkinTracer()
-	haystackOpenTracer, haystackCloser := HaystackTracer()
+type tm func() (opentracing.Tracer, io.Closer)
 
-	return []opentracing.Tracer{
-		elasticOpenTracer,
-		haystackOpenTracer,
-		jaegerOpenTracer,
-		zipkinOpenTracer,
-	}, []io.Closer{
-		elasticCloser,
-		haystackCloser,
-		jaegerCloser,
-		zipkinCloser,
+// only for use during init
+var commonTracers = make(map[string]tm)
+
+func RegisterTracer(name string, traceMaker tm) {
+	commonTracers[name] = traceMaker
+}
+
+func NewTracers() ([]opentracing.Tracer, []io.Closer) {
+	var tracers []opentracing.Tracer
+	var closers []io.Closer
+
+	disabledTracers := make(map[string]bool)
+	for _, d:= range strings.Split(os.Getenv("DISABLE_TRACERS"), ",") {
+		disabledTracers[strings.ToLower(d)] = true
 	}
+	for name, maker := range commonTracers {
+		if disabledTracers[strings.ToLower(name)] {
+			continue
+		}
+		t, c := maker()
+		tracers = append(tracers, t)
+		closers = append(closers, c)
+	}
+	// not strictly necessary
+	if len(tracers) == 0 {
+		tracers = []opentracing.Tracer{opentracing.NoopTracer{}}
+	}
+	return tracers, closers
 }

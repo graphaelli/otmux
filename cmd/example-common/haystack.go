@@ -49,3 +49,7 @@ func HaystackTracer() (opentracing.Tracer, io.Closer) {
 			}, haystack.URLCodex{})))
 	return tracer, &waitClose{closer}
 }
+
+func init() {
+	RegisterTracer("haystack", HaystackTracer)
+}

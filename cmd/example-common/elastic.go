@@ -42,3 +42,7 @@ func ElasticTracer() (opentracing.Tracer, io.Closer) {
 	tracer := apmot.New(apmot.WithTracer(elasticTracer))
 	return tracer, flushCloser{flusher: elasticTracer}
 }
+
+func init() {
+	RegisterTracer("elastic", ElasticTracer)
+}

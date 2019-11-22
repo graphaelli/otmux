@@ -34,3 +34,7 @@ func JaegerTracer() (opentracing.Tracer, io.Closer) {
 	}
 	return tracer, closer
 }
+
+func init() {
+	RegisterTracer("jaeger", JaegerTracer)
+}

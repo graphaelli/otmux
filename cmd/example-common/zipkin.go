@@ -42,3 +42,7 @@ func ZipkinTracer() (opentracing.Tracer, io.Closer) {
 	}
 	return tracer, collector
 }
+
+func init() {
+	RegisterTracer("zipkin", ZipkinTracer)
+}
