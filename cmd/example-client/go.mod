@@ -9,3 +9,5 @@ require (
 replace github.com/graphaelli/otmux => ../..
 
 replace github.com/graphaelli/otmux/cmd/example-common => ../example-common
+
+go 1.13
