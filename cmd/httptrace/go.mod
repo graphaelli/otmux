@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/opentracing/opentracing-go v1.1.0
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
+	golang.org/x/net v0.7.0
 )
 
 replace github.com/graphaelli/otmux => ../..
